@@ -24,7 +24,7 @@ npm run dev --workspace services/order
 npm run dev --workspace gateway
 ```
 
-Every service exposes `GET /healthz` for basic checks.
+Every service exposes `GET /healthz` for basic checks. The product service also offers `/products` and `/products/:id` which return the seeded catalog entries.
 
 ## Run Everything with Docker Compose
 

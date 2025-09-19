@@ -36,11 +36,10 @@ gateway/
 shared/
 ```
 
-Each workspace exposes an Express server providing `GET /healthz` for smoke tests. The user service now implements minimal auth endpoints (`/users/register`, `/users/login`, `/users/me`) backed by Postgres. Core utilities for config loading, logging, and HTTP bootstrap live in the `shared` package.
+Each workspace exposes an Express server providing `GET /healthz` for smoke tests. The user service implements minimal auth endpoints (`/users/register`, `/users/login`, `/users/me`) backed by Postgres. The product service now publishes catalog read endpoints (`/products`, `/products/:id`) seeded with a few sample items. Core utilities for config loading, logging, and HTTP bootstrap live in the `shared` package.
 
 ## Docs
 
 - [`docs/local-development.md`](docs/local-development.md)
 - [`docs/standards.md`](docs/standards.md)
 - [`docs/implementation strategy.md`](docs/implementation strategy.md)
-
