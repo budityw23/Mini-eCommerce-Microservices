@@ -1,10 +1,6 @@
-function serviceName(name) {
-  if (!name) {
-    throw new Error('Name is required');
-  }
-  return `mini-ecommerce:${name}`;
-}
-
 module.exports = {
-  serviceName,
+  ...require('./errors'),
+  env: require('./env'),
+  logger: require('./logger'),
+  http: require('./http'),
 };

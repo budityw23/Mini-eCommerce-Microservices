@@ -8,5 +8,8 @@
     "start": "node src/index.js",
     "lint": "eslint \"src/**/*.js\" \"__tests__/**/*.js\"",
     "test": "jest"
+  },
+  "dependencies": {
+    "@mini/shared": "file:../../shared"
   }
 }

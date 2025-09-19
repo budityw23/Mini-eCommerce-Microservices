@@ -1,33 +1,19 @@
-const http = require('node:http');
+const path = require('node:path');
+const { env, logger, http } = require('@mini/shared');
 
-const SERVICE_NAME = 'product-service';
-const PORT = Number(process.env.PORT || 3002);
+env.loadEnv({ files: [path.join(__dirname, '..', '.env')] });
 
-const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/healthz') {
-    const payload = JSON.stringify({ service: SERVICE_NAME, status: 'ok' });
-    res.writeHead(200, {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(payload),
-    });
-    res.end(payload);
-    return;
-  }
-
-  res.writeHead(404, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ error: 'Not Found' }));
+const config = env.getConfig({
+  PORT: { default: 3002, parser: Number },
+  DATABASE_URL: { default: 'postgres://product_service:password@localhost:5434/product_db' },
+  JWT_SECRET: { default: process.env.JWT_SECRET || 'devsecret' },
 });
 
-server.listen(PORT, () => {
-  console.log(`[${SERVICE_NAME}] listening on port ${PORT}`);
+const log = logger.createLogger('product-service');
+
+const app = http.createApp({
+  serviceName: 'product-service',
+  logger: log,
 });
 
-const shutdown = () => {
-  console.log(`[${SERVICE_NAME}] shutting down`);
-  server.close(() => process.exit(0));
-};
-
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
-
-module.exports = server;
+http.start(app, { port: config.PORT, logger: log });

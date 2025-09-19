@@ -1,21 +1,27 @@
 # Mini eCommerce Monorepo
 
-This repository hosts the user, product, order services and the Nginx API gateway for the mini eCommerce system described in the PRD.
+This repository hosts the user, product, order services and the API gateway for the mini eCommerce system described in the PRD.
 
 ## Getting Started
 
 ```bash
 npm install
+cp .env.example .env
+cp services/user/.env.example services/user/.env
+cp services/product/.env.example services/product/.env
+cp services/order/.env.example services/order/.env
+cp gateway/.env.example gateway/.env
 ```
 
-### Useful Commands
+## Useful Commands
 
-- `npm run lint` – run ESLint across all workspaces.
-- `npm run lint:fix` – fix lint errors where possible.
-- `npm run format` – check formatting with Prettier.
-- `npm run format:write` – format files in place.
-- `npm test` – run the Jest test suite across all workspaces.
-- `npm run dev --workspace services/user` – start the user service placeholder server (repeat for other services by swapping the workspace name).
+- `npm run lint` – lint all workspaces.
+- `npm run lint:fix` – fix lint issues where possible.
+- `npm run format` – format check.
+- `npm run format:write` – apply formatting.
+- `npm test` – run the Jest suites.
+- `npm run dev --workspace services/user` – run a service locally (swap workspace name as needed).
+- `npm run compose:up` / `npm run compose:down` – start or stop the local Docker Compose stack.
 
 ## Workspace Layout
 
@@ -28,5 +34,11 @@ gateway/
 shared/
 ```
 
-Each workspace currently exposes a placeholder HTTP server with a `/healthz` endpoint and a minimal test suite to confirm the tooling is wired correctly.
+Each workspace exposes a placeholder Express server providing `GET /healthz` for smoke tests. Core utilities for config loading, logging, and HTTP bootstrap live in the `shared` package.
+
+## Docs
+
+- [`docs/local-development.md`](docs/local-development.md)
+- [`docs/standards.md`](docs/standards.md)
+- [`docs/implementation strategy.md`](docs/implementation strategy.md)
 

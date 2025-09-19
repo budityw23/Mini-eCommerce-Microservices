@@ -1,33 +1,25 @@
-const http = require('node:http');
+const path = require('node:path');
+const { env, logger, http } = require('@mini/shared');
 
-const SERVICE_NAME = 'api-gateway';
-const PORT = Number(process.env.PORT || 8080);
+env.loadEnv({ files: [path.join(__dirname, '..', '.env')] });
 
-const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/healthz') {
-    const payload = JSON.stringify({ service: SERVICE_NAME, status: 'ok' });
-    res.writeHead(200, {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(payload),
+const config = env.getConfig({
+  PORT: { default: 8080, parser: Number },
+  USER_SERVICE_URL: { default: 'http://localhost:3001' },
+  PRODUCT_SERVICE_URL: { default: 'http://localhost:3002' },
+  ORDER_SERVICE_URL: { default: 'http://localhost:3003' },
+});
+
+const log = logger.createLogger('api-gateway');
+
+const app = http.createApp({
+  serviceName: 'api-gateway',
+  logger: log,
+  routes: (router) => {
+    router.get('/', (_req, res) => {
+      res.json({ message: 'Gateway ready', routes: ['/users', '/products', '/orders'] });
     });
-    res.end(payload);
-    return;
-  }
-
-  res.writeHead(503, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ error: 'Gateway routes not configured yet' }));
+  },
 });
 
-server.listen(PORT, () => {
-  console.log(`[${SERVICE_NAME}] listening on port ${PORT}`);
-});
-
-const shutdown = () => {
-  console.log(`[${SERVICE_NAME}] shutting down`);
-  server.close(() => process.exit(0));
-};
-
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
-
-module.exports = server;
+http.start(app, { port: config.PORT, logger: log });

@@ -13,7 +13,9 @@
     "lint:fix": "eslint \"{services,gateway,shared}/**/*.{js,cjs,mjs}\" --fix",
     "format": "prettier --check \"**/*.{js,json,md}\"",
     "format:write": "prettier --write \"**/*.{js,json,md}\"",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "compose:up": "docker compose up",
+    "compose:down": "docker compose down"
   },
   "keywords": [],
   "author": "",

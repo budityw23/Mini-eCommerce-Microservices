@@ -1,0 +1,107 @@
+version: "3.9"
+services:
+  user-service:
+    image: node:18
+    working_dir: /app
+    command: npm run dev --workspace services/user
+    env_file:
+      - .env
+      - services/user/.env
+    environment:
+      PORT: ${USER_SERVICE_PORT:-3001}
+    volumes:
+      - .:/app
+    ports:
+      - "3001:3001"
+    depends_on:
+      - user-db
+
+  product-service:
+    image: node:18
+    working_dir: /app
+    command: npm run dev --workspace services/product
+    env_file:
+      - .env
+      - services/product/.env
+    environment:
+      PORT: ${PRODUCT_SERVICE_PORT:-3002}
+    volumes:
+      - .:/app
+    ports:
+      - "3002:3002"
+    depends_on:
+      - product-db
+
+  order-service:
+    image: node:18
+    working_dir: /app
+    command: npm run dev --workspace services/order
+    env_file:
+      - .env
+      - services/order/.env
+    environment:
+      PORT: ${ORDER_SERVICE_PORT:-3003}
+    volumes:
+      - .:/app
+    ports:
+      - "3003:3003"
+    depends_on:
+      - order-db
+      - user-service
+      - product-service
+
+  api-gateway:
+    image: node:18
+    working_dir: /app
+    command: npm run dev --workspace gateway
+    env_file:
+      - .env
+      - gateway/.env
+    environment:
+      PORT: ${GATEWAY_PORT:-8080}
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+
+  user-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user_service
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+
+  product-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: product_db
+      POSTGRES_USER: product_service
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+
+  order-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: order_service
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5435:5432"
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+
+volumes:
+  user-db-data:
+  product-db-data:
+  order-db-data:
