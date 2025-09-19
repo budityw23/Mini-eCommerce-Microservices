@@ -1,0 +1,10 @@
+{
+  "name": "@mini/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint \"src/**/*.js\" \"__tests__/**/*.js\"",
+    "test": "jest"
+  }
+}

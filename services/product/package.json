@@ -1,0 +1,12 @@
+{
+  "name": "@mini/product-service",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "node src/index.js",
+    "lint": "eslint \"src/**/*.js\" \"__tests__/**/*.js\"",
+    "test": "jest"
+  }
+}
