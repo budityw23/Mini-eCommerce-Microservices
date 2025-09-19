@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const os = require('node:os');
-const { env, logger, http, NotFoundError, ValidationError } = require('..');
+const { env, logger, http, NotFoundError, ValidationError, UnauthorizedError } = require('..');
 
 describe('shared package', () => {
   afterEach(() => {
@@ -41,5 +41,6 @@ describe('shared package', () => {
   it('exports error classes', () => {
     expect(new NotFoundError()).toBeInstanceOf(Error);
     expect(new ValidationError().status).toBe(400);
+    expect(new UnauthorizedError().status).toBe(401);
   });
 });

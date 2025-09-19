@@ -19,8 +19,15 @@ class ValidationError extends AppError {
   }
 }
 
+class UnauthorizedError extends AppError {
+  constructor(message = 'Unauthorized') {
+    super(message, { status: 401, code: 'unauthorized' });
+  }
+}
+
 module.exports = {
   AppError,
   NotFoundError,
   ValidationError,
+  UnauthorizedError,
 };

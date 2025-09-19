@@ -13,6 +13,8 @@ cp services/order/.env.example services/order/.env
 cp gateway/.env.example gateway/.env
 ```
 
+The default user service configuration seeds an admin account using the credentials in `services/user/.env` (update them before running in shared environments).
+
 ## Useful Commands
 
 - `npm run lint` – lint all workspaces.
@@ -34,7 +36,7 @@ gateway/
 shared/
 ```
 
-Each workspace exposes a placeholder Express server providing `GET /healthz` for smoke tests. Core utilities for config loading, logging, and HTTP bootstrap live in the `shared` package.
+Each workspace exposes an Express server providing `GET /healthz` for smoke tests. The user service now implements minimal auth endpoints (`/users/register`, `/users/login`, `/users/me`) backed by Postgres. Core utilities for config loading, logging, and HTTP bootstrap live in the `shared` package.
 
 ## Docs
 

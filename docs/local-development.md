@@ -11,7 +11,7 @@ cp services/order/.env.example services/order/.env
 cp gateway/.env.example gateway/.env
 ```
 
-Adjust secrets like `JWT_SECRET` in the copied files as needed.
+Adjust secrets like `JWT_SECRET` and the seeded admin credentials in `services/user/.env` (`ADMIN_USERNAME`, `ADMIN_PASSWORD`) to your preference.
 
 ## Run Individual Services
 
