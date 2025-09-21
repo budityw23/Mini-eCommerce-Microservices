@@ -36,7 +36,7 @@ gateway/
 shared/
 ```
 
-Each workspace exposes an Express server providing `GET /healthz` for smoke tests. The user service implements minimal auth endpoints (`/users/register`, `/users/login`, `/users/me`) backed by Postgres. The product service publishes catalog read endpoints (`/products`, `/products/:id`) plus admin-only write endpoints (`POST /products`, `PATCH /products/:id`) secured via JWT role claims. The order service exposes authenticated history via `GET /orders` and accepts new orders via `POST /orders`, validating the product against the product service before persisting. Core utilities for config loading, logging, and HTTP bootstrap live in the `shared` package.
+Each workspace exposes an Express server providing `GET /healthz` for smoke tests. The user service implements minimal auth endpoints (`/users/register`, `/users/login`, `/users/me`) backed by Postgres. The product service publishes catalog read endpoints (`/products`, `/products/:id`) plus admin-only write endpoints (`POST /products`, `PATCH /products/:id`) secured via JWT role claims. The order service exposes authenticated history via `GET /orders` and accepts new orders via `POST /orders`, validating the product against the product service before persisting. The API gateway forwards `/users`, `/products`, and `/orders` traffic to their backing services so clients can rely on a single entrypoint. Core utilities for config loading, logging, and HTTP bootstrap live in the `shared` package.
 
 ## Docs
 
