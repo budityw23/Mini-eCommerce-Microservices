@@ -43,3 +43,4 @@ Each workspace exposes an Express server providing `GET /healthz` for smoke test
 - [`docs/local-development.md`](docs/local-development.md)
 - [`docs/standards.md`](docs/standards.md)
 - [`docs/implementation strategy.md`](docs/implementation strategy.md)
+- [`docs/kubernetes.md`](docs/kubernetes.md)
