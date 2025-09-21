@@ -24,7 +24,7 @@ npm run dev --workspace services/order
 npm run dev --workspace gateway
 ```
 
-Every service exposes `GET /healthz` for basic checks. The product service also offers `/products` and `/products/:id` which return the seeded catalog entries. Authenticated admins (use the token from the user service login) can call `POST /products` or `PATCH /products/:id` to manage the catalog.
+Every service exposes `GET /healthz` for basic checks. The product service also offers `/products` and `/products/:id` which return the seeded catalog entries. Authenticated admins (use the token from the user service login) can call `POST /products` or `PATCH /products/:id` to manage the catalog. The order service provides `GET /orders` for the logged-in user.
 
 ## Run Everything with Docker Compose
 

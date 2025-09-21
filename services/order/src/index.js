@@ -1,21 +1,25 @@
-const path = require('node:path');
-const { env, logger, http } = require('@mini/shared');
+const { http, logger } = require('@mini/shared');
+const config = require('./config');
+const { initDb } = require('./db');
+const routes = require('./routes');
 
-env.loadEnv({ files: [path.join(__dirname, '..', '.env')] });
+async function start() {
+  await initDb();
 
-const config = env.getConfig({
-  PORT: { default: 3003, parser: Number },
-  DATABASE_URL: { default: 'postgres://order_service:password@localhost:5435/order_db' },
-  USER_SERVICE_URL: { default: 'http://localhost:3001' },
-  PRODUCT_SERVICE_URL: { default: 'http://localhost:3002' },
-  JWT_SECRET: { default: process.env.JWT_SECRET || 'devsecret' },
+  const log = logger.createLogger('order-service');
+  const app = http.createApp({
+    serviceName: 'order-service',
+    logger: log,
+    routes: (router) => {
+      router.use(routes);
+    },
+  });
+
+  http.start(app, { port: config.PORT, logger: log });
+}
+
+start().catch((err) => {
+  // eslint-disable-next-line no-console
+  console.error('[order-service] failed to start', err);
+  process.exit(1);
 });
-
-const log = logger.createLogger('order-service');
-
-const app = http.createApp({
-  serviceName: 'order-service',
-  logger: log,
-});
-
-http.start(app, { port: config.PORT, logger: log });

@@ -10,6 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@mini/shared": "file:../../shared"
+    "@mini/shared": "file:../../shared",
+    "pg": "^8.12.0",
+    "jsonwebtoken": "^9.0.2"
   }
 }
