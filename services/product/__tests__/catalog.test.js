@@ -1,6 +1,15 @@
-const { NotFoundError, ValidationError } = require('@mini/shared');
+process.env.JWT_SECRET = 'test-secret';
+
+const { NotFoundError, ValidationError, UnauthorizedError } = require('@mini/shared');
 const { setPool, initDb } = require('../src/db');
-const { fetchProducts, fetchProduct } = require('../src/service');
+const {
+  fetchProducts,
+  fetchProduct,
+  createProductRecord,
+  updateProductRecord,
+} = require('../src/service');
+const authRequired = require('../src/auth-middleware');
+const adminOnly = require('../src/admin-middleware');
 
 class FakePool {
   constructor() {
@@ -43,6 +52,29 @@ class FakePool {
       return { rows: slice };
     }
 
+    if (/UPDATE products SET/i.test(sql)) {
+      const id = params[params.length - 1];
+      const record = this.rows.get(id);
+      if (!record) {
+        return { rows: [] };
+      }
+
+      const assignments = sql
+        .split('SET')[1]
+        .split('WHERE')[0]
+        .split(',')
+        .map((chunk) => chunk.trim().split(' = ')[0]);
+
+      assignments.forEach((field, idx) => {
+        const value = params[idx];
+        if (field === 'name') record.name = value;
+        if (field === 'description') record.description = value;
+        if (field === 'price') record.price = value;
+      });
+
+      return { rows: [record] };
+    }
+
     throw new Error(`Query not handled: ${sql}`);
   }
 }
@@ -71,5 +103,41 @@ describe('product catalog service', () => {
 
   it('throws for unknown product id', async () => {
     await expect(fetchProduct('unknown')).rejects.toThrow(NotFoundError);
+  });
+
+  it('creates and updates products with validation', async () => {
+    const created = await createProductRecord({
+      name: 'Webcam',
+      description: '1080p webcam',
+      price: 49.99,
+    });
+
+    expect(created.name).toBe('Webcam');
+
+    const updated = await updateProductRecord(created.id, { price: 59.5 });
+    expect(updated.price).toBe(59.5);
+  });
+
+  it('admin middleware rejects non-admin tokens', () => {
+    const req = { user: { role: 'user' } };
+    const res = {};
+    const next = jest.fn();
+    adminOnly(req, res, next);
+    expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
+  });
+
+  it('auth middleware attaches decoded token', () => {
+    const token = require('jsonwebtoken').sign(
+      { sub: 'user-1', username: 'admin', role: 'admin' },
+      process.env.JWT_SECRET,
+    );
+
+    const req = { headers: { authorization: `Bearer ${token}` } };
+    const res = {};
+    const next = jest.fn();
+
+    authRequired(req, res, next);
+    expect(req.user.role).toBe('admin');
+    expect(next).toHaveBeenCalledWith();
   });
 });

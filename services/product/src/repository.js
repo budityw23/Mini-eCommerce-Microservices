@@ -28,7 +28,44 @@ async function getProductById(id, pool = getPool()) {
   return mapProduct(rows[0]);
 }
 
+async function createProduct({ id, name, description, price }, pool = getPool()) {
+  await pool.query(
+    'INSERT INTO products (id, name, description, price) VALUES ($1, $2, $3, $4)',
+    [id, name, description, price],
+  );
+  return getProductById(id, pool);
+}
+
+async function updateProduct(id, updates, pool = getPool()) {
+  const fields = [];
+  const values = [];
+  let index = 1;
+
+  if (Object.prototype.hasOwnProperty.call(updates, 'name')) {
+    fields.push(`name = $${index++}`);
+    values.push(updates.name);
+  }
+  if (Object.prototype.hasOwnProperty.call(updates, 'description')) {
+    fields.push(`description = $${index++}`);
+    values.push(updates.description);
+  }
+  if (Object.prototype.hasOwnProperty.call(updates, 'price')) {
+    fields.push(`price = $${index++}`);
+    values.push(updates.price);
+  }
+
+  if (fields.length === 0) {
+    return getProductById(id, pool);
+  }
+
+  values.push(id);
+  await pool.query(`UPDATE products SET ${fields.join(', ')} WHERE id = $${index}`, values);
+  return getProductById(id, pool);
+}
+
 module.exports = {
   listProducts,
   getProductById,
+  createProduct,
+  updateProduct,
 };
