@@ -1,6 +1,7 @@
 const { randomUUID } = require('node:crypto');
 const { ValidationError } = require('@mini/shared');
 const { listOrdersByUser, createOrder } = require('./repository');
+const { fetchProduct } = require('./clients/product-client');
 
 async function listUserOrders(userId, query = {}) {
   if (!userId) {
@@ -19,6 +20,11 @@ async function listUserOrders(userId, query = {}) {
 async function recordOrder({ userId, productId }) {
   if (!userId || !productId) {
     throw new ValidationError('userId and productId are required');
+  }
+
+  const product = await fetchProduct(productId);
+  if (!product) {
+    throw new ValidationError('product not found');
   }
 
   return createOrder({ id: randomUUID(), userId, productId });

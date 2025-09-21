@@ -1,10 +1,15 @@
 process.env.JWT_SECRET = 'test-secret';
 
+jest.mock('../src/clients/product-client', () => ({
+  fetchProduct: jest.fn(),
+}));
+
 const jwt = require('jsonwebtoken');
 const { UnauthorizedError, ValidationError } = require('@mini/shared');
 const { setPool, initDb } = require('../src/db');
 const { listUserOrders, recordOrder } = require('../src/service');
 const authRequired = require('../src/auth-middleware');
+const { fetchProduct } = require('../src/clients/product-client');
 
 class FakePool {
   constructor() {
@@ -44,15 +49,24 @@ describe('order service basics', () => {
     const pool = new FakePool();
     setPool(pool);
     await initDb(pool);
+    fetchProduct.mockReset();
   });
 
   it('records and retrieves orders for a user', async () => {
+    fetchProduct.mockResolvedValue({ id: 'prod-1' });
     const created = await recordOrder({ userId: 'user-1', productId: 'prod-1' });
     expect(created.userId).toBe('user-1');
 
     const orders = await listUserOrders('user-1');
     expect(orders).toHaveLength(1);
     expect(orders[0].productId).toBe('prod-1');
+  });
+
+  it('fails when product missing', async () => {
+    fetchProduct.mockResolvedValueOnce(null);
+    await expect(recordOrder({ userId: 'user-1', productId: 'missing' })).rejects.toThrow(
+      ValidationError,
+    );
   });
 
   it('validates pagination inputs', async () => {
